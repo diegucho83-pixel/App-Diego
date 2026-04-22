@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Zonas Comerciales">
+<meta name="theme-color" content="#0a0f1e">
+<link rel="manifest" href="manifest.json">
+<title>Gestión Comercial · Zonas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#0a0f1e;--bg2:#111827;--bg3:#1e2a3a;--bg4:#243040;
+  --z34:#22d3ee;--z35:#a78bfa;--zmin:#fb923c;
+  --green:#4ade80;--yellow:#fbbf24;--red:#f87171;
+  --text:#f1f5f9;--text2:#94a3b8;--border:#1e2a3a;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#0a0f1e,#0d1f35);padding:16px 16px 12px;border-bottom:1px solid rgba(34,211,238,.15);position:sticky;top:0;z-index:100}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.logo{font-size:18px;font-weight:700;color:var(--text)}
+.logo span{color:var(--text2);font-weight:400;font-size:12px;display:block}
+.header-pills{display:flex;gap:6px;flex-wrap:wrap}
+.hpill{border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;border:1px solid}
+.hp34{background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.3);color:var(--z34)}
+.hp35{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--z35)}
+.hpmin{background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.3);color:var(--zmin)}
+.hpg{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3);color:var(--green)}
+
+/* ZONE SELECTOR */
+.zone-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border)}
+.zt{flex:1;padding:10px 4px;border:none;background:none;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;border-bottom:3px solid transparent;text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+.zt .ic{font-size:16px}
+.zt.active.z34{color:var(--z34);border-bottom-color:var(--z34)}
+.zt.active.z35{color:var(--z35);border-bottom-color:var(--z35)}
+.zt.active.zmin{color:var(--zmin);border-bottom-color:var(--zmin)}
+.zt.active.zgen{color:var(--green);border-bottom-color:var(--green)}
+
+/* NAV */
+.nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nb{flex:1;min-width:52px;padding:9px 4px;border:none;background:none;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+.nb .ic{font-size:16px}
+.nb.active{color:var(--accent-zone);border-bottom-color:var(--accent-zone)}
+
+/* VIEWS */
+.view{display:none;padding:14px}
+.view.active{display:block}
+
+/* CARDS */
+.sb{display:flex;gap:8px;margin-bottom:12px}
+.si{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none}
+.si:focus{border-color:var(--accent-zone)}
+.si::placeholder{color:var(--text2)}
+.fsel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 8px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;outline:none;cursor:pointer}
+.cc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:9px;cursor:pointer;transition:all .2s;border-left:3px solid transparent}
+.cc:active{transform:scale(.98)}
+.cc.s-activo{border-left-color:var(--green)}.cc.s-cobro{border-left-color:var(--yellow)}
+.cc.s-pendiente{border-left-color:var(--z34)}.cc.s-esperar{border-left-color:var(--z35)}
+.cc.s-inactivo{border-left-color:var(--red)}.cc.s-visita{border-left-color:var(--zmin)}
+.ct{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.cn{font-weight:700;font-size:15px}.cb{font-size:12px;color:var(--text2);margin-top:2px}
+.badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.ba{background:rgba(74,222,128,.15);color:var(--green)}.bc{background:rgba(251,191,36,.15);color:var(--yellow)}
+.bp{background:rgba(34,211,238,.15);color:var(--z34)}.be{background:rgba(167,139,250,.15);color:var(--z35)}
+.bi{background:rgba(248,113,113,.15);color:var(--red)}.bv{background:rgba(251,146,60,.15);color:var(--zmin)}
+.ci{display:flex;gap:10px;font-size:12px;color:var(--text2);flex-wrap:wrap}
+.ci .hi{color:var(--green);font-weight:600;font-family:'DM Mono',monospace}
+.obj-mini{display:flex;align-items:center;gap:6px;margin-top:6px}
+.obj-mini-bar{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.obj-mini-fill{height:100%;border-radius:2px;background:var(--green)}
+.obj-mini-fill.warn{background:var(--yellow)}
+.obj-mini-fill.low{background:var(--red)}
+.obj-mini-pct{font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);white-space:nowrap}
+
+/* PROGRESS */
+.prog-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-label{font-size:13px;font-weight:600}
+.prog-pct{font-size:17px;font-weight:700;font-family:'DM Mono',monospace}
+.prog-bar-bg{background:var(--bg3);border-radius:20px;height:8px;overflow:hidden;margin-bottom:6px}
+.prog-bar{height:100%;border-radius:20px;transition:width .5s ease}
+.prog-bar.z34c{background:linear-gradient(90deg,var(--z34),var(--green))}
+.prog-bar.z35c{background:linear-gradient(90deg,var(--z35),#c4b5fd)}
+.prog-bar.zminc{background:linear-gradient(90deg,var(--zmin),var(--yellow))}
+.prog-bar.warn{background:linear-gradient(90deg,var(--yellow),var(--zmin))}
+.prog-bar.over{background:linear-gradient(90deg,var(--green),#86efac)}
+.prog-detail{display:flex;justify-content:space-between;font-size:12px;color:var(--text2)}
+.prog-detail span{font-family:'DM Mono',monospace}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:flex-end}
+.mo.open{display:flex}
+.md{background:var(--bg2);border-radius:var(--r) var(--r) 0 0;width:100%;max-height:92vh;overflow-y:auto;padding:18px 16px 40px;border-top:2px solid var(--accent-zone,var(--z34))}
+.mh{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px}
+.mt{font-size:19px;font-weight:700;margin-bottom:4px}
+.ms{font-size:13px;color:var(--text2);margin-bottom:18px}
+.fg{margin-bottom:12px}
+.fl{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
+.fi,.fse,.fte{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.fi:focus,.fse:focus,.fte:focus{border-color:var(--accent-zone,var(--z34))}
+.fte{resize:vertical;min-height:70px}
+.cbox{border-radius:var(--r);padding:14px;margin-bottom:12px}
+.cbox34{background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(14,165,233,.05));border:1px solid rgba(34,211,238,.3)}
+.cbox35{background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(139,92,246,.05));border:1px solid rgba(167,139,250,.3)}
+.cboxmin{background:linear-gradient(135deg,rgba(251,146,60,.1),rgba(234,88,12,.05));border:1px solid rgba(251,146,60,.3)}
+.cl2{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.ca{font-size:26px;font-weight:700;color:var(--green);font-family:'DM Mono',monospace}
+.btn{width:100%;padding:13px;border:none;border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.btn:active{transform:scale(.97)}
+.bp2{background:var(--accent-zone,var(--z34));color:var(--bg)}.bs{background:var(--bg3);color:var(--text)}
+.bd{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.bg2{background:rgba(74,222,128,.15);color:var(--green);border:1px solid rgba(74,222,128,.3)}
+
+/* VISITS */
+.vi{background:var(--bg3);border-radius:10px;padding:11px;margin-bottom:7px;border-left:3px solid #0ea5e9}
+.vd{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:3px}
+.vn{font-size:13px;color:var(--text);margin-bottom:5px}
+.vm{display:flex;gap:10px;font-size:12px;flex-wrap:wrap}
+.vs2{color:var(--green);font-weight:600;font-family:'DM Mono',monospace}
+.vc2{color:var(--z34);font-weight:600;font-family:'DM Mono',monospace}
+
+/* DASHBOARD */
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.dc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px}
+.dc.full{grid-column:1/-1}
+.dv{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;margin-bottom:3px}
+.dl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.dv.ac{color:var(--z34)}.dv.gr{color:var(--green)}.dv.ye{color:var(--yellow)}.dv.re{color:var(--red)}.dv.pu{color:var(--z35)}.dv.or{color:var(--zmin)}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.sr:last-child{border-bottom:none}
+.sc{font-size:13px;font-weight:700;font-family:'DM Mono',monospace}
+
+/* URGENTES */
+.uc{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.3);border-radius:var(--r);padding:11px 13px;margin-bottom:7px;cursor:pointer}
+.un{font-weight:700;font-size:14px}.ua{font-size:12px;color:var(--yellow);margin-top:2px}
+.ud{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace}
+
+/* RECORRIDOS */
+.semana-nav{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
+.dia-btn{flex:1;min-width:52px;padding:8px 4px;border:1px solid var(--border);border-radius:10px;background:none;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;white-space:nowrap}
+.dia-btn.active{background:var(--accent-zone,var(--z34));color:var(--bg);border-color:var(--accent-zone,var(--z34))}
+.dia-btn.hoy{border-color:var(--green);color:var(--green)}
+.dia-btn.active.hoy{background:var(--green);color:var(--bg);border-color:var(--green)}
+.rec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.rec-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0}
+.rec-info{flex:1}
+.rec-name{font-weight:700;font-size:14px}
+.rec-biz{font-size:12px;color:var(--text2);margin-top:1px}
+.rec-addr{font-size:11px;color:var(--text2);margin-top:2px}
+.rec-check{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;flex-shrink:0}
+.rec-check.done{background:var(--green);border-color:var(--green)}
+.resumen-dia{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:12px;display:flex;justify-content:space-between}
+.res-item{text-align:center}
+.res-val{font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
+.res-lbl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.map-btn{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;cursor:pointer;text-decoration:none;color:var(--text);font-size:13px;font-weight:600}
+.add-rec-btn{background:rgba(34,211,238,.08);border:1px dashed rgba(34,211,238,.3);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;text-align:center;color:var(--text2);font-size:13px}
+
+/* STICKERS */
+.stl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:14px 0 9px}
+.fab{position:fixed;bottom:22px;right:14px;width:54px;height:54px;background:var(--accent-zone,var(--z34));border:none;border-radius:50%;font-size:24px;color:var(--bg);cursor:pointer;box-shadow:0 4px 20px rgba(34,211,238,.35);z-index:150;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.9)}
+.empty{text-align:center;padding:36px 16px;color:var(--text2)}
+.empty .ic{font-size:44px;margin-bottom:10px}
+.tbar{border-radius:var(--r);padding:13px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.tbar34{background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(14,165,233,.05));border:1px solid rgba(34,211,238,.2)}
+.tbar35{background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(139,92,246,.05));border:1px solid rgba(167,139,250,.2)}
+.tbarmin{background:linear-gradient(135deg,rgba(251,146,60,.1),rgba(234,88,12,.05));border:1px solid rgba(251,146,60,.2)}
+.tbar .lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.tbar .val{font-size:17px;font-weight:700;color:var(--green);font-family:'DM Mono',monospace}
+.tabs{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto}
+.tbb{flex:1;min-width:65px;padding:9px 6px;border:1px solid var(--border);border-radius:10px;background:none;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:all .2s;white-space:nowrap}
+.tbb.active{background:var(--accent-zone,var(--z34));color:var(--bg);border-color:var(--accent-zone,var(--z34))}
+.rep-stat{display:flex;gap:9px;margin-bottom:12px;flex-wrap:wrap}
+.rep-box{flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:11px;text-align:center}
+.rep-val{font-size:16px;font-weight:700;font-family:'DM Mono',monospace;margin-bottom:2px}
+.rep-lbl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.zona-badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.zb34{background:rgba(34,211,238,.1);color:var(--z34);border:1px solid rgba(34,211,238,.2)}
+.zb35{background:rgba(167,139,250,.1);color:var(--z35);border:1px solid rgba(167,139,250,.2)}
+.zbmin{background:rgba(251,146,60,.1);color:var(--zmin);border:1px solid rgba(251,146,60,.2)}
+.install-banner{background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(14,165,233,.05));border:1px solid rgba(34,211,238,.25);border-radius:var(--r);padding:12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.install-banner p{font-size:12px;color:var(--z34);flex:1}
+.install-banner button{background:var(--z34);color:var(--bg);border:none;border-radius:8px;padding:7px 12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">GESTIÓN COMERCIAL <span>Zonas 34 · 35 · Minoristas</span></div>
+    <div class="header-pills">
+      <div class="hpill hp34" id="pill-34">Z34: 0</div>
+      <div class="hpill hp35" id="pill-35">Z35: 0</div>
+      <div class="hpill hpmin" id="pill-min">MIN: 0</div>
+      <div class="hpill hpg" id="pill-com">$0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE SELECTOR -->
+<div class="zone-tabs">
+  <button class="zt active z34" onclick="selectZone('34')" id="ztab-34"><span class="ic">🔵</span>ZONA 34</button>
+  <button class="zt z35" onclick="selectZone('35')" id="ztab-35"><span class="ic">🟣</span>ZONA 35</button>
+  <button class="zt zmin" onclick="selectZone('min')" id="ztab-min"><span class="ic">🟠</span>MINORISTA</button>
+  <button class="zt zgen" onclick="selectZone('gen')" id="ztab-gen"><span class="ic">📊</span>GENERAL</button>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav">
+  <button class="nb active" onclick="sv('clientes')" id="nav-clientes"><span class="ic">👥</span>Clientes</button>
+  <button class="nb" onclick="sv('recorridos')" id="nav-recorridos"><span class="ic">🗺️</span>Recorridos</button>
+  <button class="nb" onclick="sv('urgentes')" id="nav-urgentes"><span class="ic">⚡</span>Hoy</button>
+  <button class="nb" onclick="sv('objetivos')" id="nav-objetivos"><span class="ic">🎯</span>Objetivos</button>
+  <button class="nb" onclick="sv('comisiones')" id="nav-comisiones"><span class="ic">💰</span>Comisiones</button>
+  <button class="nb" onclick="sv('dashboard')" id="nav-dashboard"><span class="ic">📊</span>Resumen</button>
+  <button class="nb" onclick="sv('ajustes')" id="nav-ajustes"><span class="ic">⚙️</span>Ajustes</button>
+</nav>
+
+<!-- CLIENTES -->
+<div class="view active" id="view-clientes">
+  <div id="install-banner" class="install-banner" style="display:none">
+    <p>📲 Instalá la app en tu pantalla de inicio</p>
+    <button onclick="installApp()">Instalar</button>
+  </div>
+  <div class="sb">
+    <input type="text" class="si" placeholder="🔍 Buscar..." id="search-input" oninput="rc()">
+    <select class="fsel" id="filter-s" onchange="rc()">
+      <option value="">Todos</option>
+      <option value="Activo / En seguimiento">Activos</option>
+      <option value="Cobro pendiente">Cobro</option>
+      <option value="Pendiente de visita">Pendiente</option>
+      <option value="Esperar para contactar">Esperar</option>
+      <option value="Inactivo - Recaptura">Inactivos</option>
+      <option value="Visita sin cobro">Visitado</option>
+    </select>
+  </div>
+  <div id="clients-list"></div>
+</div>
+
+<!-- RECORRIDOS -->
+<div class="view" id="view-recorridos">
+  <div class="stl">📅 Semana actual</div>
+  <div class="semana-nav" id="semana-nav"></div>
+  <div class="resumen-dia" id="resumen-dia">
+    <div class="res-item"><div class="res-val" style="color:var(--text2)" id="res-total">0</div><div class="res-lbl">Planificados</div></div>
+    <div class="res-item"><div class="res-val" style="color:var(--green)" id="res-visit">0</div><div class="res-lbl">Visitados ✅</div></div>
+    <div class="res-item"><div class="res-val" style="color:var(--red)" id="res-pend">0</div><div class="res-lbl">Pendientes</div></div>
+  </div>
+  <div id="rec-list"></div>
+  <button class="add-rec-btn" onclick="openAddRec()">＋ Agregar cliente a este día</button>
+</div>
+
+<!-- HOY -->
+<div class="view" id="view-urgentes">
+  <div class="stl">⚡ Vencidas / Para hoy</div><div id="urgent-list"></div>
+  <div class="stl" style="margin-top:18px">📅 Próximos 7 días</div><div id="upcoming-list"></div>
+</div>
+
+<!-- OBJETIVOS -->
+<div class="view" id="view-objetivos">
+  <div class="stl">🎯 Objetivo mensual — Zona</div>
+  <div id="obj-zona-wrap"></div>
+  <button class="btn bs" style="margin-bottom:18px" onclick="openObjZona()">✏️ Cambiar objetivo de zona</button>
+  <div class="stl">👤 Objetivos por cliente</div>
+  <div id="obj-clientes-list"></div>
+</div>
+
+<!-- COMISIONES -->
+<div class="view" id="view-comisiones">
+  <div class="stl">📅 Este mes</div>
+  <div class="dg">
+    <div class="dc"><div class="dv gr" id="c-mes">$0</div><div class="dl">Comisiones</div></div>
+    <div class="dc"><div class="dv ac" id="v-mes">$0</div><div class="dl">Total vendido</div></div>
+  </div>
+  <div class="cbox cbox34" id="calc-box">
+    <div class="cl2" id="calc-label">🧮 Calculadora · 4.2%</div>
+    <input type="number" class="fi" placeholder="Monto vendido..." id="calc-in" oninput="calcC()" style="margin:8px 0;background:rgba(255,255,255,.05)">
+    <div class="ca" id="calc-res">$0,00</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px" id="calc-det">Tu comisión sobre $0</div>
+  </div>
+  <div class="stl">📋 Historial de ventas</div>
+  <div id="all-visits"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="view" id="view-dashboard">
+  <!-- RESUMEN GENERAL (zona gen) o por zona -->
+  <div id="dash-content"></div>
+</div>
+
+<!-- AJUSTES -->
+<div class="view" id="view-ajustes">
+  <div class="stl">📲 Instalación</div>
+  <div class="dc" style="margin-bottom:12px">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:10px">Para instalar en pantalla de inicio:</p>
+    <p style="font-size:13px;margin-bottom:6px">1️⃣ Abrí en <strong>Chrome</strong></p>
+    <p style="font-size:13px;margin-bottom:6px">2️⃣ Tocá los <strong>3 puntitos</strong> arriba a la derecha</p>
+    <p style="font-size:13px;margin-bottom:8px">3️⃣ Tocá <strong>"Instalar aplicación"</strong></p>
+    <p style="font-size:13px;color:var(--green)">✅ Funciona sin internet</p>
+  </div>
+  <div id="install-btn-wrap"></div>
+  <div class="stl">💾 Mis datos</div>
+  <div class="dc" style="margin-bottom:12px">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:10px">Exportá un backup o importá desde otro dispositivo</p>
+    <button class="btn bg2" onclick="exportData()">📤 Exportar backup</button>
+    <button class="btn bs" onclick="document.getElementById('import-file').click()">📥 Importar datos</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+  <div class="stl">⚠️ Zona peligrosa</div>
+  <button class="btn bd" onclick="resetAll()">🗑️ Borrar todos los datos</button>
+</div>
+
+<button class="fab" onclick="openAdd()" id="fab-btn">＋</button>
+
+<!-- MODALS -->
+<div class="mo" id="m-client" onclick="cm('m-client')">
+  <div class="md" onclick="event.stopPropagation()"><div class="mh"></div><div id="m-client-c"></div></div>
+</div>
+<div class="mo" id="m-report" onclick="cm('m-report')">
+  <div class="md" onclick="event.stopPropagation()"><div class="mh"></div><div id="m-report-c"></div></div>
+</div>
+<div class="mo" id="m-visit" onclick="cm('m-visit')">
+  <div class="md" onclick="event.stopPropagation()">
+    <div class="mh"></div>
+    <div class="mt">📝 Registrar visita</div>
+    <div class="ms" id="v-cname"></div>
+    <div class="fg"><label class="fl">Fecha</label><input type="date" class="fi" id="v-date"></div>
+    <div class="fg"><label class="fl">Monto vendido ($)</label><input type="number" class="fi" id="v-amt" placeholder="0" oninput="upVC()"></div>
+    <div class="cbox cbox34" id="v-cbox" style="display:none"><div class="cl2" id="v-comm-label">Tu comisión (4.2%)</div><div class="ca" id="v-cval">$0</div></div>
+    <div class="fg"><label class="fl">Notas</label><textarea class="fte" id="v-notes" placeholder="Qué pasó..."></textarea></div>
+    <div class="fg"><label class="fl">Próxima acción</label><input type="text" class="fi" id="v-nact" placeholder="Próximo paso..."></div>
+    <div class="fg"><label class="fl">Fecha próxima visita</label><input type="date" class="fi" id="v-ndate"></div>
+    <div class="fg"><label class="fl">Nuevo estado</label>
+      <select class="fse" id="v-status">
+        <option value="Activo / En seguimiento">🔄 Activo / En seguimiento</option>
+        <option value="Cobro pendiente">💰 Cobro pendiente</option>
+        <option value="Visita sin cobro">✅ Visita sin cobro</option>
+        <option value="Esperar para contactar">⏳ Esperar para contactar</option>
+        <option value="Pendiente de visita">📍 Pendiente de visita</option>
+        <option value="Inactivo - Recaptura">💤 Inactivo - Recaptura</option>
+      </select>
+    </div>
+    <button class="btn bp2" onclick="saveV()">✅ Guardar visita</button>
+    <button class="btn bs" onclick="cm('m-visit')">Cancelar</button>
+  </div>
+</div>
+<div class="mo" id="m-add" onclick="cm('m-add')">
+  <div class="md" onclick="event.stopPropagation()">
+    <div class="mh"></div>
+    <div class="mt">➕ Nuevo cliente</div>
+    <div class="ms" id="add-zona-label">Zona 34 Mayorista</div>
+    <div class="fg"><label class="fl">Nombre</label><input type="text" class="fi" id="a-name" placeholder="Nombre del contacto"></div>
+    <div class="fg"><label class="fl">Empresa / Local</label><input type="text" class="fi" id="a-biz" placeholder="Nombre del negocio"></div>
+    <div class="fg"><label class="fl">Teléfono</label><input type="tel" class="fi" id="a-phone" placeholder="11-XXXX-XXXX"></div>
+    <div class="fg"><label class="fl">Dirección</label><input type="text" class="fi" id="a-addr" placeholder="Ej: Av. San Martín 1234, Olivos"></div>
+    <div class="fg"><label class="fl">Estado</label>
+      <select class="fse" id="a-status">
+        <option value="Pendiente de visita">📍 Pendiente de visita</option>
+        <option value="Activo / En seguimiento">🔄 Activo / En seguimiento</option>
+        <option value="Cobro pendiente">💰 Cobro pendiente</option>
+        <option value="Esperar para contactar">⏳ Esperar para contactar</option>
+        <option value="Inactivo - Recaptura">💤 Inactivo - Recaptura</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Objetivo mensual ($)</label><input type="number" class="fi" id="a-obj" placeholder="Opcional"></div>
+    <div class="fg"><label class="fl">Notas</label><textarea class="fte" id="a-notes" placeholder="Info relevante..."></textarea></div>
+    <button class="btn bp2" onclick="saveAdd()">✅ Agregar cliente</button>
+    <button class="btn bs" onclick="cm('m-add')">Cancelar</button>
+  </div>
+</div>
+<div class="mo" id="m-obj-zona" onclick="cm('m-obj-zona')">
+  <div class="md" onclick="event.stopPropagation()">
+    <div class="mh"></div>
+    <div class="mt">🎯 Objetivo mensual</div>
+    <div class="ms" id="oz-zona-lbl">Meta de ventas para toda la Zona</div>
+    <div class="fg"><label class="fl">Objetivo de venta ($)</label><input type="number" class="fi" id="oz-val" placeholder="Ej: 500000"></div>
+    <button class="btn bp2" onclick="saveObjZona()">✅ Guardar objetivo</button>
+    <button class="btn bs" onclick="cm('m-obj-zona')">Cancelar</button>
+  </div>
+</div>
+<div class="mo" id="m-obj-cl" onclick="cm('m-obj-cl')">
+  <div class="md" onclick="event.stopPropagation()">
+    <div class="mh"></div>
+    <div class="mt">🎯 Objetivo de cliente</div>
+    <div class="ms" id="oc-name"></div>
+    <div class="fg"><label class="fl">Objetivo mensual de venta ($)</label><input type="number" class="fi" id="oc-val" placeholder="Ej: 50000"></div>
+    <button class="btn bp2" onclick="saveObjCl()">✅ Guardar</button>
+    <button class="btn bs" onclick="cm('m-obj-cl')">Cancelar</button>
+  </div>
+</div>
+<!-- MODAL AGREGAR A RECORRIDO -->
+<div class="mo" id="m-add-rec" onclick="cm('m-add-rec')">
+  <div class="md" onclick="event.stopPropagation()">
+    <div class="mh"></div>
+    <div class="mt">🗺️ Agregar a recorrido</div>
+    <div class="ms" id="add-rec-dia-lbl">Seleccioná el cliente</div>
+    <div class="fg"><label class="fl">Buscar cliente</label><input type="text" class="fi" id="rec-search" placeholder="Escribí el nombre..." oninput="filterRecSearch()"></div>
+    <div id="rec-search-results" style="max-height:250px;overflow-y:auto"></div>
+    <button class="btn bs" onclick="cm('m-add-rec')">Cancelar</button>
+  </div>
+</div>
+
+<script>
+// ==================== CONFIG ====================
+const ZONES = {
+  '34': { name:'Zona 34', label:'Mayorista', color:'var(--z34)', cr:0.042, cls:'z34', tbarCls:'tbar34', cboxCls:'cbox34', barCls:'z34c', zbCls:'zb34', emoji:'🔵' },
+  '35': { name:'Zona 35', label:'Mayorista', color:'var(--z35)', cr:0.007, cls:'z35', tbarCls:'tbar35', cboxCls:'cbox35', barCls:'z35c', zbCls:'zb35', emoji:'🟣' },
+  'min': { name:'Minoristas', label:'Minorista', color:'var(--zmin)', cr:0.042, cls:'zmin', tbarCls:'tbarmin', cboxCls:'cboxmin', barCls:'zminc', zbCls:'zbmin', emoji:'🟠' }
+};
+
+let currentZone = '34';
+let cid = null, objClientId = null, deferredPrompt = null;
+let currentDia = null, addRecDia = null;
+
+const SC = {
+  'Activo / En seguimiento':{cls:'activo',b:'ba',e:'🔄'},
+  'Cobro pendiente':{cls:'cobro',b:'bc',e:'💰'},
+  'Pendiente de visita':{cls:'pendiente',b:'bp',e:'📍'},
+  'Esperar para contactar':{cls:'esperar',b:'be',e:'⏳'},
+  'Inactivo - Recaptura':{cls:'inactivo',b:'bi',e:'💤'},
+  'Visita sin cobro':{cls:'visita',b:'bv',e:'✅'}
+};
+
+const INIT_35 = [
+  ['Mauro Distribuidora R y V','R y V'],
+  ['Agus Bacanes',''],
+  ['Emanuel Acierni Hijo',''],
+  ['Facu Taverna',''],
+  ['Claudio Acierni Cl','Cl'],
+  ['Gonzalo Suárez',''],
+  ['Centro Veterinario San Martín',''],
+  ['Yourike Daniel Viso',''],
+  ['Fernando Dominguez','Mascotas Olivos'],
+  ['Federico Vet America','America'],
+  ['Dario Pet Planet Roncivalles','Pet Planet'],
+  ['Ana Vallejos Tito','Tito'],
+  ['Nacho Vallejos Tito','Tito'],
+  ['Guido Vallejos Tito','Tito'],
+  ['Cristian Encargado Zangari','Miguel Ball'],
+];
+
+const INIT_MIN = [
+  ['Mariel Rodriguez','Vet Maschwitz'],
+  ['Maria Marta',''],
+  ['Natalia Noemi','Bella Vista'],
+  ['Laura Big Dog Dog',''],
+  ['Daniel Manzi','Vete Pacheco'],
+  ['Joel Ballester',''],
+  ['Jorge Carogana','Veterinario'],
+  ['Gonzalo Diego Florida',''],
+  ['Pocho Agustín Amalur',''],
+  ['Veterinaria La Lucila',''],
+  ['MOLLIS Pet shop & Grooming',''],
+  ['Leo Mariela Olivos',''],
+  ['Isabel Neguembor Calleja',''],
+  ['Nicolás González',''],
+  ['Caubet Monica','Criador/petshop'],
+  ['Veterinaria Santa Lucia',''],
+  ['Monica Beccar',''],
+  ['Vet Praxis Teresa',''],
+  ['Yoa Jose C Paz',''],
+];
+
+const INIT_34 = [
+  ['Cristian Encargado Zangari','Miguel Ball'],['Fernando Dominguez','Mascota Olivos'],
+  ['Anibal Danbar','San Agustín Vete Vicente'],['Claudio Acierni','Cl'],
+  ['Fernando Gabriel Alvarez',''],['Mariano MC Martínez',''],
+  ['Mariano Eguibar','Benavidez'],['Maximiliano Ga','Maxipet'],
+  ['Rodríguez Ezequiel','Ballester'],['Julián Favrot','San Martin'],
+  ['Distribuidor Alejandro José Suárez',''],['Girona Gerardo','Bosh'],
+  ['Pet shop Damia','Damia'],['Gisela San Mar',''],
+  ['Dario San Isid','Anton'],['Mastrachelo Garin','Mastrocola'],
+  ['Gil Matias','San Miguel'],['Damian Lassen','José C Paz'],
+  ['Moriconi Cami','Cami'],['Melogno Iván','Vista'],
+  ['Hernan Florida',''],['Daniel Grand B',''],
+  ['LA TANA Pame Cabrera',''],['Gabriela Vet M',''],
+  ['Silvia Garcia','Vete Husky'],['Lautaro Dr Romero',''],
+  ['Centro Médico Veterinario','Martínez Jo'],['Nestor Bologne',''],
+  ['Estefania Vet','Chilavert'],['Raul Novoa','Veterinaria'],
+  ['San Carlos Agu',''],['Leonardo Cadahia',''],
+  ['Fusero Claudio',''],['Fusca Damian','Bilinghurts'],
+  ['Seib Adrian',''],['petshop Damimar','Damian'],
+  ['Melina Yourik','Adrian Mayorista'],['Federico Vet','America'],
+  ['Gustavo Pacheco','Cadahia'],['Anadesviadx',''],
+  ['Belita Cadahia','Leonardo Munro'],['Ulloa Priscila','Los Polvorines'],
+  ['Mariano Grande','Maiten San Andres'],['Tyg Balanceados Fabiana','Fasciolo Da'],
+  ['Facu Taverna',''],['Mauro Distribuidora','R y V'],
+  ['Analia Frattessi',''],['Ignacio Reynoso','Punto Vet'],
+  ['Martin Muñoz','Biomascotas Maschwitz'],['Carlos Barros','Distribuidor'],
+  ['Distribuidora J Y F','Carlitos/florencia'],['Patricia Fusero','Pilar'],
+  ['Veterinaria Del Este','Carolina'],['Carl Hobohm','Vet'],
+  ['My Sweetfriends','pelu Cinty Cintia'],['Irene Loggia','Vete'],
+  ['Daniel Boulogne',''],['Consultorio Veterinario','Veronica Vied'],
+  ['Animarket Baires','Ana'],['Agus Bacanes','']
+];
+
+// ==================== DATA ====================
+function mkClient(n,b,zone,i){
+  return {id:Date.now()+i+Math.floor(Math.random()*9999),name:n,biz:b,phone:'',addr:'',
+    status:'Pendiente de visita',nextAction:'Primera visita',nextDate:'',lastVisit:'',
+    notes:'',visits:[],totalSold:0,totalComm:0,objMensual:0,zone:zone};
+}
+
+function ld(zone){
+  const k='z'+zone;
+  const r=localStorage.getItem(k);
+  if(r) return JSON.parse(r);
+  let init=[];
+  if(zone==='34') init=INIT_34.map(([n,b],i)=>mkClient(n,b,'34',i));
+  if(zone==='35') init=INIT_35.map(([n,b],i)=>mkClient(n,b,'35',i));
+  if(zone==='min') init=INIT_MIN.map(([n,b],i)=>mkClient(n,b,'min',i));
+  sd(zone,init); return init;
+}
+function sd(zone,cl){localStorage.setItem('z'+zone,JSON.stringify(cl));}
+function loadCfg(){const r=localStorage.getItem('zallcfg');return r?JSON.parse(r):{obj34:0,obj35:0,objmin:0};}
+function saveCfg(c){localStorage.setItem('zallcfg',JSON.stringify(c));}
+
+function loadRecorridos(){const r=localStorage.getItem('recorridos');return r?JSON.parse(r):{};}
+function saveRecorridos(rec){localStorage.setItem('recorridos',JSON.stringify(rec));}
+
+let allClients = { '34': ld('34'), '35': ld('35'), 'min': ld('min') };
+let cfg = loadCfg();
+let recorridos = loadRecorridos(); // {YYYY-MM-DD: [{clientId, zone, done}]}
+
+function clients(){ return allClients[currentZone]; }
+function getClient(zone,id){ return allClients[zone].find(c=>c.id===id); }
+function getClientAny(id){ for(const z of ['34','35','min']){const c=allClients[z].find(x=>x.id===id);if(c)return{c,z};} return null; }
+
+// ==================== UTILS ====================
+function fmt(n){return'$'+Number(n).toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function fmtC(n){return'$'+Number(n).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function tod(){return new Date().toISOString().split('T')[0];}
+function fmtD(d){if(!d)return'–';const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}
+function du(d){if(!d)return null;return Math.ceil((new Date(d)-new Date(tod()))/86400000);}
+function gcfg(s){return SC[s]||SC['Pendiente de visita'];}
+function thisMonth(){return tod().slice(0,7);}
+function monthSold(c){return c.visits.filter(v=>v.date&&v.date.startsWith(thisMonth())).reduce((s,v)=>s+(v.amount||0),0);}
+function totalZonaMes(zone){return allClients[zone].reduce((s,c)=>s+monthSold(c),0);}
+function zCR(){return ZONES[currentZone].cr;}
+
+function setAccent(zone){
+  const col = ZONES[zone]?.color || 'var(--z34)';
+  document.documentElement.style.setProperty('--accent-zone', col);
+}
+
+// ==================== ZONE SWITCH ====================
+function selectZone(z){
+  currentZone = z;
+  setAccent(z);
+  ['34','35','min','gen'].forEach(zz=>{
+    const el=document.getElementById('ztab-'+zz);
+    if(el) el.classList.toggle('active', zz===z);
+  });
+  const nav=document.getElementById('main-nav');
+  const fab=document.getElementById('fab-btn');
+  if(z==='gen'){
+    nav.style.display='none';
+    fab.style.display='none';
+    showGeneral();
+  } else {
+    nav.style.display='flex';
+    fab.style.display='flex';
+    // update calc label
+    const cr=ZONES[z].cr;
+    const pct=(cr*100).toFixed(1)+'%';
+    const el=document.getElementById('calc-label');
+    if(el) el.textContent=`🧮 Calculadora · ${pct}`;
+    sv(document.querySelector('.nb.active')?.id.replace('nav-','') || 'clientes');
+    rc(); uhs();
+  }
+}
+
+// ==================== VIEWS ====================
+function sv(v){
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(e=>e.classList.remove('active'));
+  const vEl=document.getElementById('view-'+v);
+  const nEl=document.getElementById('nav-'+v);
+  if(vEl) vEl.classList.add('active');
+  if(nEl) nEl.classList.add('active');
+  if(v==='clientes') rc();
+  if(v==='recorridos') renderRecorridos();
+  if(v==='urgentes') ru();
+  if(v==='objetivos') robj();
+  if(v==='comisiones') rcom();
+  if(v==='dashboard') rd();
+  uhs();
+}
+
+function uhs(){
+  const tc34=allClients['34'].reduce((s,c)=>s+(c.totalComm||0),0);
+  const tc35=allClients['35'].reduce((s,c)=>s+(c.totalComm||0),0);
+  const tcmin=allClients['min'].reduce((s,c)=>s+(c.totalComm||0),0);
+  document.getElementById('pill-34').textContent='Z34: '+allClients['34'].length;
+  document.getElementById('pill-35').textContent='Z35: '+allClients['35'].length;
+  document.getElementById('pill-min').textContent='MIN: '+allClients['min'].length;
+  document.getElementById('pill-com').textContent=fmtC(tc34+tc35+tcmin);
+}
+
+// ==================== CLIENTES ====================
+function rc(){
+  if(currentZone==='gen') return;
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const fs=document.getElementById('filter-s').value;
+  const f=clients().filter(c=>{
+    const ms=!q||c.name.toLowerCase().includes(q)||(c.biz||'').toLowerCase().includes(q);
+    const mst=!fs||c.status===fs;
+    return ms&&mst;
+  });
+  const el=document.getElementById('clients-list');
+  if(!f.length){el.innerHTML='<div class="empty"><div class="ic">🔍</div><p>Sin resultados</p></div>';return;}
+  el.innerHTML=f.map(c=>{
+    const cfg2=gcfg(c.status);
+    const d=du(c.nextDate);
+    const dl=d!==null?(d<0?`⚠️ Vencido ${Math.abs(d)}d`:d===0?'🔴 Hoy':`📅 En ${d}d`):'';
+    const ms=monthSold(c);
+    const hasObj=c.objMensual>0;
+    const objHtml=hasObj?`<div class="obj-mini"><div class="obj-mini-bar"><div class="obj-mini-fill ${Math.round(ms/c.objMensual*100)>=80?'':Math.round(ms/c.objMensual*100)<40?'low':'warn'}" style="width:${Math.min(Math.round(ms/c.objMensual*100),100)}%"></div></div><span class="obj-mini-pct">${Math.min(Math.round(ms/c.objMensual*100),100)}%</span></div>`:'';
+    return`<div class="cc s-${cfg2.cls}" onclick="oc('${currentZone}',${c.id})">
+      <div class="ct"><div><div class="cn">${c.name}</div>${c.biz?`<div class="cb">${c.biz}</div>`:''}</div>
+      <span class="badge ${cfg2.b}">${cfg2.e}</span></div>
+      <div class="ci">${dl?`<span>${dl}</span>`:''}${c.totalSold>0?`<span class="hi">${fmt(c.totalSold)}</span>`:''}${c.visits.length>0?`<span>${c.visits.length} visita${c.visits.length>1?'s':''}</span>`:''}</div>
+      ${objHtml}
+    </div>`;
+  }).join('');
+}
+
+// ==================== OPEN CLIENT ====================
+function oc(zone,id){
+  cid=id; const c=getClient(zone,id); const cfg2=gcfg(c.status); const cr=ZONES[zone].cr;
+  const vh=c.visits.length?[...c.visits].reverse().map(v=>`
+    <div class="vi"><div class="vd">${fmtD(v.date)}</div>${v.notes?`<div class="vn">${v.notes}</div>`:''}
+    <div class="vm">${v.amount>0?`<span class="vs2">Venta: ${fmt(v.amount)}</span>`:''}${v.amount>0?`<span class="vc2">Comisión: ${fmtC(v.amount*cr)}</span>`:''}</div>
+    ${v.nextAction?`<div style="font-size:12px;color:var(--text2);margin-top:4px">➡️ ${v.nextAction}</div>`:''}</div>`).join('')
+    :'<div style="color:var(--text2);font-size:13px;padding:8px 0">Sin visitas aún</div>';
+  const ms=monthSold(c);
+  const zb=ZONES[zone];
+  document.getElementById('m-client-c').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div class="mt">${c.name}</div><span class="badge ${cfg2.b}">${cfg2.e}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <span class="zona-badge ${zb.zbCls}">${zb.emoji} ${zb.name}</span>
+      <span style="font-size:12px;color:var(--text2)">${(zb.cr*100).toFixed(1)}% comisión${c.biz?' · '+c.biz:''}</span>
+    </div>
+    ${c.totalSold>0?`<div class="tbar ${zb.tbarCls}"><div><div class="lbl">Total vendido</div><div class="val">${fmt(c.totalSold)}</div></div><div style="text-align:right"><div class="lbl">Comisión total</div><div class="val">${fmtC(c.totalComm)}</div></div></div>`:''}
+    ${c.addr?`<a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.addr)}" target="_blank">🗺️ Ver en Google Maps <span style="font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;margin-left:auto">${c.addr}</span></a>`:''}
+    ${c.nextAction?`<div style="background:var(--bg3);border-radius:10px;padding:11px;margin-bottom:12px"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Próxima acción</div><div style="font-size:14px">${c.nextAction}</div>${c.nextDate?`<div style="font-size:12px;color:var(--accent-zone);margin-top:4px;font-family:'DM Mono',monospace">📅 ${fmtD(c.nextDate)}</div>`:''}</div>`:''}
+    ${c.notes?`<div style="font-size:13px;color:var(--text2);margin-bottom:12px;padding:10px;background:var(--bg3);border-radius:10px">${c.notes}</div>`:''}
+    <div class="tabs">
+      <button class="tbb active" id="th" onclick="tt('h')">📋 Historial</button>
+      <button class="tbb" id="te" onclick="tt('e')">✏️ Editar</button>
+    </div>
+    <div id="tc-h">${vh}</div>
+    <div id="tc-e" style="display:none">
+      <div class="fg"><label class="fl">Teléfono</label><input type="tel" class="fi" id="e-phone" value="${c.phone||''}"></div>
+      <div class="fg"><label class="fl">Empresa</label><input type="text" class="fi" id="e-biz" value="${c.biz||''}"></div>
+      <div class="fg"><label class="fl">Dirección</label><input type="text" class="fi" id="e-addr" value="${c.addr||''}" placeholder="Ej: Av. San Martín 1234, Olivos"></div>
+      <div class="fg"><label class="fl">Estado</label><select class="fse" id="e-status">${Object.keys(SC).map(s=>`<option value="${s}"${c.status===s?' selected':''}>${SC[s].e} ${s}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">Objetivo mensual ($)</label><input type="number" class="fi" id="e-obj" value="${c.objMensual||''}"></div>
+      <div class="fg"><label class="fl">Próxima acción</label><input type="text" class="fi" id="e-nact" value="${c.nextAction||''}"></div>
+      <div class="fg"><label class="fl">Fecha próxima</label><input type="date" class="fi" id="e-ndate" value="${c.nextDate||''}"></div>
+      <div class="fg"><label class="fl">Notas</label><textarea class="fte" id="e-notes">${c.notes||''}</textarea></div>
+      <button class="btn bg2" onclick="sce('${zone}')">💾 Guardar cambios</button>
+      <button class="btn bd" onclick="dc('${zone}',${id})">🗑️ Eliminar</button>
+    </div>
+    <button class="btn bp2" onclick="ovm('${zone}',${id})" style="margin-top:10px">📝 Registrar visita</button>
+    ${c.phone?`<button class="btn bs" onclick="window.location='tel:${c.phone}'">📞 Llamar</button>`:''}
+    <button class="btn bs" onclick="cm('m-client')">Cerrar</button>`;
+  document.getElementById('m-client').classList.add('open');
+}
+
+function tt(t){
+  document.getElementById('th').classList.toggle('active',t==='h');
+  document.getElementById('te').classList.toggle('active',t==='e');
+  document.getElementById('tc-h').style.display=t==='h'?'block':'none';
+  document.getElementById('tc-e').style.display=t==='e'?'block':'none';
+}
+
+function sce(zone){
+  const c=getClient(zone,cid);
+  c.phone=document.getElementById('e-phone').value;
+  c.biz=document.getElementById('e-biz').value;
+  c.addr=document.getElementById('e-addr').value;
+  c.status=document.getElementById('e-status').value;
+  c.objMensual=parseFloat(document.getElementById('e-obj').value)||0;
+  c.nextAction=document.getElementById('e-nact').value;
+  c.nextDate=document.getElementById('e-ndate').value;
+  c.notes=document.getElementById('e-notes').value;
+  sd(zone,allClients[zone]);cm('m-client');rc();uhs();toast('✅ Cliente actualizado');
+}
+
+function dc(zone,id){
+  if(!confirm('¿Eliminar este cliente?'))return;
+  allClients[zone]=allClients[zone].filter(c=>c.id!==id);
+  sd(zone,allClients[zone]);cm('m-client');rc();uhs();
+}
+
+// ==================== VISIT ====================
+function ovm(zone,id){
+  cid=id; const c=getClient(zone,id); const cr=ZONES[zone].cr;
+  document.getElementById('v-cname').textContent=c.name+(c.biz?' · '+c.biz:'');
+  document.getElementById('v-comm-label').textContent=`Tu comisión (${(cr*100).toFixed(1)}%)`;
+  document.getElementById('v-date').value=tod();
+  document.getElementById('v-amt').value='';
+  document.getElementById('v-notes').value='';
+  document.getElementById('v-nact').value='';
+  document.getElementById('v-ndate').value='';
+  document.getElementById('v-status').value=c.status;
+  document.getElementById('v-cbox').style.display='none';
+  cm('m-client');
+  // store zone for saveV
+  document.getElementById('m-visit').dataset.zone=zone;
+  document.getElementById('m-visit').classList.add('open');
+}
+function upVC(){
+  const a=parseFloat(document.getElementById('v-amt').value)||0;
+  const zone=document.getElementById('m-visit').dataset.zone||currentZone;
+  const cr=ZONES[zone].cr;
+  const b=document.getElementById('v-cbox');
+  if(a>0){b.style.display='block';document.getElementById('v-cval').textContent=fmtC(a*cr);}
+  else b.style.display='none';
+}
+function saveV(){
+  const zone=document.getElementById('m-visit').dataset.zone||currentZone;
+  const cr=ZONES[zone].cr;
+  const c=getClient(zone,cid);
+  const a=parseFloat(document.getElementById('v-amt').value)||0;
+  const v={id:Date.now(),date:document.getElementById('v-date').value,amount:a,comm:a*cr,
+    notes:document.getElementById('v-notes').value,nextAction:document.getElementById('v-nact').value};
+  c.visits.push(v);c.totalSold=(c.totalSold||0)+a;c.totalComm=(c.totalComm||0)+v.comm;
+  c.lastVisit=v.date;c.status=document.getElementById('v-status').value;
+  const na=document.getElementById('v-nact').value,nd=document.getElementById('v-ndate').value;
+  if(na)c.nextAction=na;if(nd)c.nextDate=nd;
+  sd(zone,allClients[zone]);cm('m-visit');rc();uhs();
+  // Mark done in recorridos if present
+  const dia=tod();
+  if(recorridos[dia]){
+    const entry=recorridos[dia].find(r=>r.clientId===cid&&r.zone===zone);
+    if(entry) entry.done=true;
+    saveRecorridos(recorridos);
+  }
+  toast('✅ Visita registrada'+(a>0?' · '+fmtC(a*cr)+' comisión':''));
+}
+
+// ==================== ADD CLIENT ====================
+function openAdd(){
+  ['a-name','a-biz','a-phone','a-addr','a-notes','a-obj'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('add-zona-label').textContent=ZONES[currentZone].name+' '+ZONES[currentZone].label;
+  document.getElementById('m-add').classList.add('open');
+}
+function saveAdd(){
+  const n=document.getElementById('a-name').value.trim();
+  if(!n){toast('⚠️ Ingresá un nombre');return;}
+  const c={id:Date.now(),name:n,biz:document.getElementById('a-biz').value.trim(),
+    phone:document.getElementById('a-phone').value.trim(),
+    addr:document.getElementById('a-addr').value.trim(),
+    status:document.getElementById('a-status').value,
+    nextAction:'Primera visita',nextDate:'',lastVisit:'',
+    notes:document.getElementById('a-notes').value.trim(),
+    objMensual:parseFloat(document.getElementById('a-obj').value)||0,
+    visits:[],totalSold:0,totalComm:0,zone:currentZone};
+  allClients[currentZone].push(c);sd(currentZone,allClients[currentZone]);cm('m-add');rc();uhs();toast('✅ Cliente agregado');
+}
+
+// ==================== RECORRIDOS ====================
+function getWeekDates(){
+  const days=[];const today=new Date();
+  const dow=today.getDay(); // 0=dom
+  const monday=new Date(today);
+  monday.setDate(today.getDate()-(dow===0?6:dow-1));
+  for(let i=0;i<5;i++){
+    const d=new Date(monday);d.setDate(monday.getDate()+i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  return days;
+}
+
+function renderRecorridos(){
+  const days=getWeekDates();
+  const todayStr=tod();
+  if(!currentDia||!days.includes(currentDia)) currentDia=todayStr<=days[4]&&todayStr>=days[0]?todayStr:days[0];
+  const DIAS=['Lunes','Martes','Miércoles','Jueves','Viernes'];
+  const navEl=document.getElementById('semana-nav');
+  navEl.innerHTML=days.map((d,i)=>{
+    const isHoy=d===todayStr;
+    const cnt=(recorridos[d]||[]).filter(r=>{
+      if(currentZone==='gen') return true;
+      return r.zone===currentZone;
+    }).length;
+    return`<button class="dia-btn ${d===currentDia?'active':''} ${isHoy?'hoy':''}" onclick="selDia('${d}')">${DIAS[i]}<br><span style="font-size:9px;opacity:.7">${d.slice(8)}/${d.slice(5,7)}</span>${cnt>0?`<br><span style="font-size:9px">${cnt} 👥</span>`:''}
+    </button>`;
+  }).join('');
+  renderDia();
+}
+
+function selDia(d){
+  currentDia=d;
+  renderRecorridos();
+}
+
+function renderDia(){
+  const dia=currentDia;
+  const recs=(recorridos[dia]||[]).filter(r=>{
+    if(currentZone==='gen') return true;
+    return r.zone===currentZone;
+  });
+  const total=recs.length;
+  const done=recs.filter(r=>r.done).length;
+  const pend=total-done;
+  document.getElementById('res-total').textContent=total;
+  document.getElementById('res-visit').textContent=done;
+  document.getElementById('res-pend').textContent=pend;
+
+  if(!recs.length){
+    document.getElementById('rec-list').innerHTML='<div class="empty"><div class="ic">🗺️</div><p>No hay clientes planificados para este día</p></div>';
+    return;
+  }
+  document.getElementById('rec-list').innerHTML=recs.map((r,i)=>{
+    const found=getClientAny(r.clientId);
+    if(!found) return '';
+    const {c,z}=found;
+    const zb=ZONES[z];
+    const addr=c.addr?`<div class="rec-addr">📍 ${c.addr}</div>`:'';
+    const mapsUrl=c.addr?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.addr)}`:'';
+    return`<div class="rec-card">
+      <div class="rec-num" style="background:${r.done?'rgba(74,222,128,.2)':'rgba(255,255,255,.07)'};color:${r.done?'var(--green)':'var(--text2)'}">${r.done?'✅':i+1}</div>
+      <div class="rec-info" onclick="oc('${z}',${c.id})">
+        <div class="rec-name">${c.name}</div>
+        <div class="rec-biz">${c.biz||''} <span class="zona-badge ${zb.zbCls}" style="vertical-align:middle">${zb.emoji} ${zb.name}</span></div>
+        ${addr}
+        ${mapsUrl?`<a href="${mapsUrl}" target="_blank" style="font-size:11px;color:var(--accent-zone);text-decoration:none" onclick="event.stopPropagation()">🗺️ Abrir en Maps</a>`:''}
+      </div>
+      <button class="rec-check ${r.done?'done':''}" onclick="toggleDone('${dia}',${r.clientId},'${z}')">${r.done?'✅':'○'}</button>
+    </div>`;
+  }).filter(Boolean).join('');
+}
+
+function toggleDone(dia,clientId,zone){
+  if(!recorridos[dia]) recorridos[dia]=[];
+  const entry=recorridos[dia].find(r=>r.clientId===clientId&&r.zone===zone);
+  if(entry) entry.done=!entry.done;
+  saveRecorridos(recorridos);
+  renderDia();
+  // Update nav badges
+  renderRecorridos();
+}
+
+function openAddRec(){
+  addRecDia=currentDia;
+  const dias=['Lunes','Martes','Miércoles','Jueves','Viernes'];
+  const dayNames=['Lunes','Martes','Miércoles','Jueves','Viernes'];
+  const weekDays=getWeekDates();
+  const idx=weekDays.indexOf(currentDia);
+  document.getElementById('add-rec-dia-lbl').textContent='Agregando al '+( idx>=0?dayNames[idx]:currentDia );
+  document.getElementById('rec-search').value='';
+  filterRecSearch();
+  document.getElementById('m-add-rec').classList.add('open');
+}
+
+function filterRecSearch(){
+  const q=document.getElementById('rec-search').value.toLowerCase();
+  const dia=addRecDia||currentDia;
+  const existing=(recorridos[dia]||[]).map(r=>r.clientId+'_'+r.zone);
+  let all=[];
+  const zones=currentZone==='gen'?['34','35','min']:[currentZone];
+  zones.forEach(z=>{
+    allClients[z].forEach(c=>{
+      if(!q||c.name.toLowerCase().includes(q)||(c.biz||'').toLowerCase().includes(q)){
+        const key=c.id+'_'+z;
+        all.push({c,z,already:existing.includes(key)});
+      }
+    });
+  });
+  const el=document.getElementById('rec-search-results');
+  if(!all.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;padding:12px">Sin resultados</div>';return;}
+  el.innerHTML=all.slice(0,20).map(({c,z,already})=>{
+    const zb=ZONES[z];
+    return`<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:10px">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14px">${c.name}</div>
+        <div style="font-size:12px;color:var(--text2)">${c.biz||''} · <span class="zona-badge ${zb.zbCls}">${zb.emoji} ${zb.name}</span></div>
+      </div>
+      ${already
+        ?'<span style="font-size:12px;color:var(--text2)">Ya agregado</span>'
+        :`<button class="btn bp2" style="width:auto;padding:6px 14px;font-size:12px;margin:0" onclick="addToRec(${c.id},'${z}')">+ Agregar</button>`}
+    </div>`;
+  }).join('');
+}
+
+function addToRec(clientId,zone){
+  const dia=addRecDia||currentDia;
+  if(!recorridos[dia]) recorridos[dia]=[];
+  const exists=recorridos[dia].find(r=>r.clientId===clientId&&r.zone===zone);
+  if(!exists) recorridos[dia].push({clientId,zone,done:false});
+  saveRecorridos(recorridos);
+  filterRecSearch();
+  renderRecorridos();
+  toast('✅ Cliente agregado al recorrido');
+}
+
+// ==================== URGENTES ====================
+function ru(){
+  const t=tod();const in7=new Date();in7.setDate(in7.getDate()+7);const i7=in7.toISOString().split('T')[0];
+  const cl=currentZone==='gen'?[...allClients['34'],...allClients['35'],...allClients['min']]:clients();
+  const urg=cl.filter(c=>c.nextDate&&c.nextDate<=t).sort((a,b)=>a.nextDate.localeCompare(b.nextDate));
+  const up=cl.filter(c=>c.nextDate&&c.nextDate>t&&c.nextDate<=i7).sort((a,b)=>a.nextDate.localeCompare(b.nextDate));
+  document.getElementById('urgent-list').innerHTML=urg.length?urg.map(c=>{
+    const z=c.zone||currentZone;const zb=ZONES[z];
+    return`<div class="uc" onclick="oc('${z}',${c.id})"><div class="un">${c.name} <span class="zona-badge ${zb.zbCls}" style="vertical-align:middle">${zb.emoji}</span></div><div class="ua">${c.nextAction||'Sin acción'}</div><div class="ud">${fmtD(c.nextDate)}</div></div>`;
+  }).join(''):'<div class="empty"><div class="ic">✅</div><p>No hay urgencias hoy</p></div>';
+  document.getElementById('upcoming-list').innerHTML=up.length?up.map(c=>{
+    const z=c.zone||currentZone;const zb=ZONES[z];
+    return`<div class="cc" onclick="oc('${z}',${c.id})"><div class="ct"><div><div class="cn">${c.name} <span class="zona-badge ${zb.zbCls}" style="vertical-align:middle;font-size:9px">${zb.emoji}</span></div><div class="cb">${c.nextAction||''}</div></div><div style="font-size:12px;color:var(--accent-zone);font-family:'DM Mono',monospace">${fmtD(c.nextDate)}</div></div></div>`;
+  }).join(''):'<div style="color:var(--text2);font-size:13px;padding:8px 0">Sin próximas visitas</div>';
+}
+
+// ==================== OBJETIVOS ====================
+function robj(){
+  const z=currentZone==='gen'?'34':currentZone;
+  const zb=ZONES[z];
+  const tm=thisMonth();
+  const zonaVendida=totalZonaMes(z);
+  const objZ=cfg['obj'+z]||0;
+  const pctZ=objZ>0?Math.min(Math.round(zonaVendida/objZ*100),200):0;
+  const overZ=zonaVendida>=objZ&&objZ>0;
+  document.getElementById('obj-zona-wrap').innerHTML=`
+    <div class="prog-wrap">
+      <div class="prog-header">
+        <span class="prog-label">${zb.name} — ${tm.slice(5)}/${tm.slice(0,4)}</span>
+        <span class="prog-pct" style="color:${overZ?'var(--green)':'var(--accent-zone)'}">${objZ>0?pctZ+'%':'Sin objetivo'}</span>
+      </div>
+      ${objZ>0?`<div class="prog-bar-bg"><div class="prog-bar ${overZ?'over':pctZ>=70?'warn':zb.barCls}" style="width:${pctZ}%"></div></div>
+      <div class="prog-detail"><span>${fmt(zonaVendida)} vendido este mes</span><span>${overZ?'✅ Meta alcanzada!':'Faltan '+fmt(objZ-zonaVendida)}</span></div>
+      <div style="font-size:12px;color:var(--text2);margin-top:7px">Objetivo: ${fmt(objZ)} · Comisión esperada: ${fmtC(objZ*zb.cr)}</div>`
+      :'<div style="font-size:13px;color:var(--text2)">Definí tu objetivo mensual</div>'}
+    </div>`;
+  const cl=currentZone==='gen'?[...allClients['34'],...allClients['35'],...allClients['min']]:clients();
+  const withObj=cl.filter(c=>c.objMensual>0).sort((a,b)=>b.objMensual-a.objMensual);
+  const withoutObj=cl.filter(c=>!c.objMensual);
+  let html='';
+  if(withObj.length){
+    html+=withObj.map(c=>{
+      const cz=c.zone||currentZone; const czb=ZONES[cz];
+      const ms=monthSold(c);
+      const pct=Math.min(Math.round(ms/c.objMensual*100),100);
+      const over=ms>=c.objMensual;
+      return`<div class="prog-wrap" style="cursor:pointer" onclick="oc('${cz}',${c.id})">
+        <div class="prog-header">
+          <div><div style="font-weight:700;font-size:14px">${c.name} <span class="zona-badge ${czb.zbCls}" style="vertical-align:middle">${czb.emoji}</span></div>${c.biz?`<div style="font-size:12px;color:var(--text2)">${c.biz}</div>`:''}</div>
+          <span class="prog-pct" style="color:${over?'var(--green)':'var(--accent-zone)'}">${pct}%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar ${over?'over':pct>=70?'warn':czb.barCls}" style="width:${pct}%"></div></div>
+        <div class="prog-detail"><span>${fmt(ms)} / ${fmt(c.objMensual)}</span><span>${over?'✅ Meta!':'Faltan '+fmt(c.objMensual-ms)}</span></div>
+      </div>`;
+    }).join('');
+  }
+  if(withoutObj.length){
+    html+=`<div class="stl" style="margin-top:${withObj.length?'14px':'0'}">Sin objetivo definido (${withoutObj.length})</div>`;
+    html+=withoutObj.map(c=>{
+      const cz=c.zone||currentZone;
+      return`<div class="cc" onclick="openObjCl('${cz}',${c.id})">
+        <div class="ct"><div><div class="cn">${c.name}</div>${c.biz?`<div class="cb">${c.biz}</div>`:''}</div>
+        <span style="font-size:12px;color:var(--accent-zone)">+ Definir</span></div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('obj-clientes-list').innerHTML=html||'<div class="empty"><div class="ic">🎯</div><p>Sin clientes</p></div>';
+}
+
+function openObjZona(){
+  const z=currentZone==='gen'?'34':currentZone;
+  document.getElementById('oz-val').value=cfg['obj'+z]||'';
+  document.getElementById('oz-zona-lbl').textContent='Meta de ventas para '+ZONES[z].name;
+  document.getElementById('m-obj-zona').classList.add('open');
+}
+function saveObjZona(){
+  const z=currentZone==='gen'?'34':currentZone;
+  cfg['obj'+z]=parseFloat(document.getElementById('oz-val').value)||0;
+  saveCfg(cfg);cm('m-obj-zona');robj();toast('✅ Objetivo guardado');
+}
+function openObjCl(zone,id){
+  objClientId={zone,id};
+  const c=getClient(zone,id);
+  document.getElementById('oc-name').textContent=c.name+(c.biz?' · '+c.biz:'');
+  document.getElementById('oc-val').value=c.objMensual||'';
+  document.getElementById('m-obj-cl').classList.add('open');
+}
+function saveObjCl(){
+  const {zone,id}=objClientId;
+  const c=getClient(zone,id);
+  c.objMensual=parseFloat(document.getElementById('oc-val').value)||0;
+  sd(zone,allClients[zone]);cm('m-obj-cl');robj();rc();toast('✅ Objetivo guardado');
+}
+
+// ==================== COMISIONES ====================
+function calcC(){
+  const v=parseFloat(document.getElementById('calc-in').value)||0;
+  const cr=zCR();
+  document.getElementById('calc-res').textContent=fmtC(v*cr);
+  document.getElementById('calc-det').textContent='Tu comisión sobre '+fmt(v);
+}
+function rcom(){
+  const tm=thisMonth();let ms=0,mc=0;const av=[];
+  const cl=currentZone==='gen'?[...allClients['34'],...allClients['35'],...allClients['min']]:clients();
+  cl.forEach(c=>{
+    const cz=c.zone||currentZone;
+    c.visits.forEach(v=>{
+      if(v.date&&v.date.startsWith(tm)){ms+=v.amount||0;mc+=v.comm||0;}
+      if(v.amount>0)av.push({...v,cn:c.name,zone:cz});
+    });
+  });
+  document.getElementById('c-mes').textContent=fmtC(mc);
+  document.getElementById('v-mes').textContent=fmt(ms);
+  av.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  document.getElementById('all-visits').innerHTML=av.length?av.map(v=>{
+    const zb=ZONES[v.zone]||ZONES['34'];
+    return`<div class="vi"><div style="font-weight:700;font-size:14px;margin-bottom:2px">${v.cn} <span class="zona-badge ${zb.zbCls}" style="vertical-align:middle">${zb.emoji}</span></div><div class="vd">${fmtD(v.date)}</div><div class="vm"><span class="vs2">Venta: ${fmt(v.amount)}</span><span class="vc2">Comisión: ${fmtC(v.comm)}</span></div>${v.notes?`<div style="font-size:12px;color:var(--text2);margin-top:4px">${v.notes}</div>`:''}</div>`;
+  }).join(''):'<div class="empty"><div class="ic">💰</div><p>Sin ventas registradas</p></div>';
+}
+
+// ==================== DASHBOARD ====================
+function rd(){
+  const zones=currentZone==='gen'?['34','35','min']:[currentZone];
+  let html='';
+  // Resumen por zona
+  zones.forEach(z=>{
+    const zb=ZONES[z];const cl=allClients[z];
+    const tc=cl.reduce((s,c)=>s+(c.totalComm||0),0);
+    const uc=cl.filter(c=>c.nextDate&&c.nextDate<=tod()).length;
+    const cc=cl.filter(c=>c.status==='Cobro pendiente').length;
+    const vs=totalZonaMes(z);
+    html+=`<div style="margin-bottom:16px">
+      <div class="stl" style="color:${zb.color}">${zb.emoji} ${zb.name} <span style="font-size:10px;opacity:.6">${(zb.cr*100).toFixed(1)}% comisión</span></div>
+      <div class="dg">
+        <div class="dc"><div class="dv ac">${cl.length}</div><div class="dl">Clientes</div></div>
+        <div class="dc"><div class="dv gr">${fmtC(tc)}</div><div class="dl">Comisión total</div></div>
+        <div class="dc"><div class="dv ye">${uc}</div><div class="dl">Urgentes hoy</div></div>
+        <div class="dc"><div class="dv or">${cc}</div><div class="dl">Cobros pend.</div></div>
+      </div>`;
+    // Top 3 por venta
+    const top=[...cl].filter(c=>c.totalSold>0).sort((a,b)=>b.totalSold-a.totalSold).slice(0,3);
+    if(top.length) html+=`<div class="dc full" style="margin-bottom:9px">${top.map((c,i)=>`<div class="sr"><span>${i+1}. ${c.name}</span><span class="sc" style="color:var(--green)">${fmt(c.totalSold)}</span></div>`).join('')}</div>`;
+    html+='</div>';
+  });
+  // Resumen recorrido de hoy
+  const todayRec=(recorridos[tod()]||[]);
+  const todayAll=todayRec.filter(r=>currentZone==='gen'||r.zone===currentZone);
+  if(todayAll.length){
+    const done=todayAll.filter(r=>r.done).length;
+    html+=`<div class="stl">📅 Recorrido de hoy</div>
+    <div class="dc full" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-around">
+        <div style="text-align:center"><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--green)">${done}</div><div style="font-size:11px;color:var(--text2)">Visitados ✅</div></div>
+        <div style="text-align:center"><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--red)">${todayAll.length-done}</div><div style="font-size:11px;color:var(--text2)">Pendientes</div></div>
+        <div style="text-align:center"><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text2)">${todayAll.length}</div><div style="font-size:11px;color:var(--text2)">Total</div></div>
+      </div>
+    </div>`;
+  }
+  document.getElementById('dash-content').innerHTML=html;
+}
+
+// ==================== GENERAL VIEW ====================
+function showGeneral(){
+  // Switch to dashboard for general
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(e=>e.classList.remove('active'));
+  document.getElementById('view-dashboard').classList.add('active');
+  rd();
+  uhs();
+}
+
+// ==================== EXPORT/IMPORT ====================
+function exportData(){
+  const data=JSON.stringify({clients34:allClients['34'],clients35:allClients['35'],clientsMin:allClients['min'],cfg,recorridos},null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='zonas_backup_'+tod()+'.json';a.click();
+  URL.revokeObjectURL(url);toast('✅ Backup exportado');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      // Support old format (single zone)
+      if(data.clients){
+        if(!confirm(`¿Importar ${data.clients.length} clientes a Zona 34? Reemplaza los datos actuales.`))return;
+        allClients['34']=data.clients;
+        if(data.cfg) cfg={...cfg,...data.cfg};
+      } else {
+        const total=(data.clients34||[]).length+(data.clients35||[]).length+(data.clientsMin||[]).length;
+        if(!confirm(`¿Importar ${total} clientes? Reemplaza los datos actuales.`))return;
+        if(data.clients34) allClients['34']=data.clients34;
+        if(data.clients35) allClients['35']=data.clients35;
+        if(data.clientsMin) allClients['min']=data.clientsMin;
+        if(data.cfg) cfg={...cfg,...data.cfg};
+        if(data.recorridos) recorridos=data.recorridos;
+      }
+      sd('34',allClients['34']);sd('35',allClients['35']);sd('min',allClients['min']);
+      saveCfg(cfg);saveRecorridos(recorridos);
+      rc();uhs();toast('✅ Datos importados');
+    }catch{toast('❌ Error al importar');}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+function resetAll(){
+  if(!confirm('¿Borrar TODOS los datos?'))return;
+  ['z34','z35','zmin','zallcfg','recorridos'].forEach(k=>localStorage.removeItem(k));
+  allClients={'34':ld('34'),'35':ld('35'),'min':ld('min')};
+  cfg=loadCfg();recorridos=loadRecorridos();
+  rc();uhs();toast('🗑️ Datos borrados');
+}
+
+// ==================== HELPERS ====================
+function cm(id){document.getElementById(id).classList.remove('open');}
+function toast(msg){
+  const t=document.createElement('div');t.textContent=msg;
+  Object.assign(t.style,{position:'fixed',bottom:'88px',left:'50%',transform:'translateX(-50%)',
+    background:'#1e293b',border:'1px solid #334155',color:'#f1f5f9',padding:'10px 20px',
+    borderRadius:'20px',fontSize:'13px',zIndex:'999',whiteSpace:'nowrap',boxShadow:'0 4px 20px rgba(0,0,0,.4)'});
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+}
+
+// ==================== PWA ====================
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').style.display='flex';
+  document.getElementById('install-btn-wrap').innerHTML='<button class="btn bp2" onclick="installApp()">📲 Instalar app ahora</button>';
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('install-banner').style.display='none';
+  toast('✅ App instalada');
+});
+function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;});}
+}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+
+// ==================== INIT ====================
+setAccent('34');
+rc(); uhs();
+</script>
+</body>
+</html>
